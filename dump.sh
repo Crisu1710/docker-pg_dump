@@ -15,6 +15,4 @@ if [ ! -z "$DELETE_OLDER_THAN" ]; then
 	find /dump/* -mmin "+$DELETE_OLDER_THAN" -exec rm {} \;
 fi
 
-
-
 echo "Job finished: $(date)"
