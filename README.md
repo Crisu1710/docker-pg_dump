@@ -1,7 +1,8 @@
-annixa/pg_dump
+dexxter1911/cron-pg_dump
 ================
+forked from Annixa/docker-pg_dump
 
-Docker image with pg_dump running as a cron task. Find the image, here: https://hub.docker.com/r/annixa/docker-pg_dump/
+Docker image with pg_dump running as a cron task. Find the image, here: https://registry.hub.docker.com/r/dexxter1911/cron-pg_dump
 
 ## Usage
 
@@ -18,10 +19,10 @@ Attach a target postgres container to this container and mount a volume to conta
 | `CRON_SCHEDULE` | Required | 0 1 * * * | The cron schedule at which to run the pg_dump |
 | `DELETE_OLDER_THAN` | Optional | `None` | Optionally, delete files older than `DELETE_OLDER_THAN` minutes. Do not include `+` or `-`. |
 
-Example:
+Example (docker):
 ```
 postgres-backup:
-  image: annixa/docker-pg_dump
+  image: dexxter1911/cron-pg_dump
   container_name: postgres-backup
   links:
     - postgres:db #Maps postgres as "db"
@@ -36,6 +37,56 @@ postgres-backup:
     - /dump
   command: dump-cron
 ```
+Example (k8s/k3s):
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deploy
+  namespace: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: db-passwd
+        - name: postgres-backup
+          image: dexxter1911/cron-pg_dump
+          args: ["dump-cron"]
+          volumeMounts:
+            - name: backup
+              mountPath: /dump
+          env:
+            - name: PGUSER
+              value: "postgres"
+            - name: PGHOST
+              value: "postgres-service.db"
+            - name: PGDB
+              value: "postgres"
+            - name: CRON_SCHEDULE
+              value: "0 1 * * *"
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: db-passwd
+```
 
 Run backup once without cron job, use "mybackup" as backup file prefix, shell will ask for password:
 
@@ -43,4 +94,4 @@ Run backup once without cron job, use "mybackup" as backup file prefix, shell wi
         -v /path/to/target/folder:/dump \   # where to put db dumps
         -e PREFIX=mybackup \
         --link my-postgres-container:db \   # linked container with running mongo
-        annixa/docker-pg_dump dump
+        dexxter1911/cron-pg_dump dump
