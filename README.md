@@ -1,8 +1,8 @@
-dexxter1911/cron-pg_dump
+cron-pg_dump
 ================
-forked from Annixa/docker-pg_dump
+forked from dexxter1911/docker-pg_dump
 
-Docker image with pg_dump running as a cron task. Find the image, here: https://registry.hub.docker.com/r/dexxter1911/cron-pg_dump
+Docker image with pg_dump running as a cron task.
 
 ## Usage
 
@@ -22,7 +22,7 @@ Attach a target postgres container to this container and mount a volume to conta
 Example (docker):
 ```
 postgres-backup:
-  image: dexxter1911/cron-pg_dump
+  image: crisu1710/cron-pg_dump
   container_name: postgres-backup
   links:
     - postgres:db #Maps postgres as "db"
@@ -67,7 +67,7 @@ spec:
                   key: password
                   name: db-passwd
         - name: postgres-backup
-          image: dexxter1911/cron-pg_dump
+          image: crisu1710/cron-pg_dump
           args: ["dump-cron"]
           volumeMounts:
             - name: backup
