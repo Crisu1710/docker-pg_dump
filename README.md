@@ -22,7 +22,7 @@ Attach a target postgres container to this container and mount a volume to conta
 Example (docker):
 ```
 postgres-backup:
-  image: crisu1710/cron-pg_dump
+  image: ghcr.io/crisu1710/docker-pg_dump:main
   container_name: postgres-backup
   links:
     - postgres:db #Maps postgres as "db"
@@ -67,7 +67,7 @@ spec:
                   key: password
                   name: db-passwd
         - name: postgres-backup
-          image: crisu1710/cron-pg_dump
+          image: ghcr.io/crisu1710/docker-pg_dump:main
           args: ["dump-cron"]
           volumeMounts:
             - name: backup
